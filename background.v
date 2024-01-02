@@ -3,6 +3,7 @@ module background(
     input rst,
     input [9:0] h_cnt,
     input [9:0] v_cnt,
+    input [11:0] data,
     output [11:0] pixel
 );
 
@@ -14,7 +15,6 @@ module background(
     /////////////////////////////////////////////////////////////////
     // VGA
     /////////////////////////////////////////////////////////////////
-    wire [11:0] data;
     wire [16:0] pixel_addr_bg;
     wire valid;
 

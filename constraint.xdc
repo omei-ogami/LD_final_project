@@ -323,22 +323,11 @@ set_property PACKAGE_PIN R19 [get_ports vsync]
 # set_property PACKAGE_PIN K19 [get_ports QspiCSn]
 #    set_property IOSTANDARD LVCMOS33 [get_ports QspiCSn]
 
-## Don't Touch
-# set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
-# set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
-# set_property CONFIG_MODE SPIx4 [current_design]
-# set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
+set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
+set_property CONFIG_MODE SPIx4 [current_design]
 
-## where 3.3 is the voltage provided to configuration bank 0
+set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
+
 set_property CONFIG_VOLTAGE 3.3 [current_design]
-## where value1 is either VCCO(for Vdd=3.3) or GND(for Vdd=1.8)
 set_property CFGBVS VCCO [current_design]
-
-#set_property PACKAGE_PIN V16 [get_ports speed]
-#set_property IOSTANDARD LVCMOS33 [get_ports speed]
-#set_property PACKAGE_PIN V16 [get_ports dir]
-#set_property IOSTANDARD LVCMOS33 [get_ports dir]
-#set_property PACKAGE_PIN V17 [get_ports en]
-#set_property IOSTANDARD LVCMOS33 [get_ports en]
-#set_property PACKAGE_PIN W16 [get_ports rst]
-#set_property IOSTANDARD LVCMOS33 [get_ports rst]

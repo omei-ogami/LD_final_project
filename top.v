@@ -18,19 +18,36 @@ module lab(
     /////////////////////////////////////////////////////////////////
     wire [11:0] data;
     wire [16:0] pixel_addr;
-    wire [11:0] pixel_background;
+    wire [11:0] pixel, pixel_background, pixel_enemyL;
     wire valid;
     wire [9:0] h_cnt;   //640
     wire [9:0] v_cnt;   //480
 
-    assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel_background : 12'h0;
+    assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel : 12'h0;
+
+    composite comp(
+        .clk(clk),
+        .background(pixel_background),
+        .enemyL(pixel_enemyL),
+        .pixel(pixel)
+    );
 
     background vga_bg(
         .clk(clk),
         .rst(rst),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
+        .data(data),
         .pixel(pixel_background)
+    );
+
+    enemyL vga_enemyL(
+        .clk(clk),
+        .rst(rst),
+        .h_cnt(h_cnt),
+        .v_cnt(v_cnt),
+        .data(data),
+        .pixel(pixel_enemyL)
     );
 
     clock_divider clk_div(
