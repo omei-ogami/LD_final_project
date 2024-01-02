@@ -5,7 +5,8 @@ module lab(
     output [3:0] vgaGreen,
     output [3:0] vgaBlue,
     output hsync,
-    output vsync
+    output vsync,
+    output [10:0] led
 );
 
     /////////////////////////////////////////////////////////////////
@@ -22,6 +23,11 @@ module lab(
     wire valid;
     wire [9:0] h_cnt;   //640
     wire [9:0] v_cnt;   //480
+    /////////////////////////////////////////////////////////////////
+    // script
+    /////////////////////////////////////////////////////////////////
+    wire [7:0] counter;
+    wire [3:0] pos_0;
 
     assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel : 12'h0;
 
@@ -44,6 +50,7 @@ module lab(
     enemyL vga_enemyL(
         .clk(clk),
         .rst(rst),
+        .pos(pos_0),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
@@ -65,5 +72,13 @@ module lab(
         .h_cnt(h_cnt),
         .v_cnt(v_cnt)
     );
+
+    script pos_enemy0(
+        .clk(clk_22),
+        .rst(rst),
+        .pos_0(pos_0)
+    );
+
+    assign led = 1 << pos_0;
     
 endmodule
