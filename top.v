@@ -18,35 +18,26 @@ module lab(
     /////////////////////////////////////////////////////////////////
     wire [11:0] data;
     wire [16:0] pixel_addr;
-    wire [11:0] pixel;
+    wire [11:0] pixel_background;
     wire valid;
     wire [9:0] h_cnt;   //640
     wire [9:0] v_cnt;   //480
 
-    assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel : 12'h0;
+    assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel_background : 12'h0;
+
+    background vga_bg(
+        .clk(clk),
+        .rst(rst),
+        .h_cnt(h_cnt),
+        .v_cnt(v_cnt),
+        .pixel(pixel_background)
+    );
 
     clock_divider clk_div(
         .clk(clk),
         .clk1(clk_25MHz),
         .clk22(clk_22)
     );
-
-    mem_addr_gen mem_addr_gen_inst(
-        .clk(clk_22),
-        .rst(rst),
-        .h_cnt(h_cnt),
-        .v_cnt(v_cnt),
-        .pixel_addr(pixel_addr)
-    );
-     
- 
-    blk_mem_gen_0 background(
-        .clka(clk_25MHz),
-        .wea(0),
-        .addra(pixel_addr),
-        .dina(data[11:0]),
-        .douta(pixel)
-    ); 
 
     vga_controller vga_inst(
         .pclk(clk_25MHz),
