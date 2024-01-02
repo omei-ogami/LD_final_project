@@ -40,7 +40,7 @@ module lab(
     );
      
  
-    blk_mem_gen_0 blk_mem_gen_0_inst(
+    blk_mem_gen_0 background(
         .clka(clk_25MHz),
         .wea(0),
         .addra(pixel_addr),
