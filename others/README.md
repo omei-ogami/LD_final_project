@@ -3,7 +3,7 @@ TODO
 
 - [x] Hit judgment
 - [x] Damage
-- [ ] Money (Score)
+- [x] Money (Score)
 - [ ] Playable with keyboard
 - [ ] Gamescene
 - [ ] Level 1
