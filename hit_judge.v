@@ -47,7 +47,7 @@ module judge (
             hit <= 1'b0;
         end
         else begin
-            if(pos_0 == 0) begin
+            if(pos_0 == 11) begin
                 flag <= 1'b0;
                 hit <= 1'b0;
             end

@@ -8,7 +8,7 @@ module lab(
     output [3:0] vgaBlue,
     output hsync,
     output vsync,
-    output [10:0] led,
+    output [9:0] led,
     output hit
 );
 
@@ -32,9 +32,9 @@ module lab(
     wire [7:0] counter;
     wire [3:0] pos_0;
     /////////////////////////////////////////////////////////////////
-    // hit judge
+    // player
     /////////////////////////////////////////////////////////////////
-    //wire hit;
+    wire damage, op_damage;
     
 
     assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel : 12'h0;
@@ -63,7 +63,8 @@ module lab(
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
-        .pixel(pixel_enemyL)
+        .pixel(pixel_enemyL),
+        .damage(damage)
     );
 
     clock_divider clk_div(
@@ -97,7 +98,14 @@ module lab(
         .hit(hit)
     );
 
-    assign led = 1 << pos_0;
+    onepulse op_d(.clk(clk), .signal(damage), .op(op_damage));
+
+    player play(
+        .clk(clk),
+        .rst(rst),
+        .damage(op_damage),
+        .life(led)
+    );
 
     
 endmodule

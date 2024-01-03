@@ -6,7 +6,8 @@ module enemyL(
     input [9:0] h_cnt,
     input [9:0] v_cnt,
     input [11:0] data,
-    output [11:0] pixel
+    output [11:0] pixel,
+    output reg damage
 );
 
     /////////////////////////////////////////////////////////////////
@@ -19,6 +20,8 @@ module enemyL(
     /////////////////////////////////////////////////////////////////
     wire [14:0] pixel_addr_eL;
     reg [9:0] H, V, next_H, next_V;
+
+    reg next_damage;
 
 
     clock_divider clk_div_eL(
@@ -47,6 +50,13 @@ module enemyL(
     always @(posedge clk) begin
         H <= next_H;
         V <= next_V;
+        damage <= next_damage;
+    end
+
+    always @(*) begin
+        next_damage = damage;
+        if((pos != 0 && pos != 10) || hit) next_damage = 1'b0;
+        else if(!hit) next_damage = 1'b1; 
     end
 
     always @(*) begin
