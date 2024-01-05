@@ -3,12 +3,14 @@ module player (
     input rst,
     input damage,
     input hit,
+    input [3:0] state,
     output [9:0] life,
     output [6:0] display,
 	output [3:0] digit
 );
 
     parameter FULL_LIFE = 10'b1111111111;
+    parameter NONLIFE = 10'b0000000000;
 
     /////////////////////////////////////////////////////////////////
     // life system
@@ -35,7 +37,7 @@ module player (
         .digit_one(money_1)
     );
 
-    assign life = FULL_LIFE >> total_damage;
+    assign life = (state == 4'd0)? NONLIFE : FULL_LIFE >> total_damage;
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
@@ -50,13 +52,15 @@ module player (
     end
 
     always @(*) begin
+        
         next_damage = total_damage;
-        if(damage && total_damage < 10) next_damage = total_damage + 1;
+        if(state == 4'd0) next_damage = 0;
+        else if(damage && total_damage < 10) next_damage = total_damage + 1;
     end
 
     always @(*) begin
         next_money = money;
-        next_nums = {4'd0, 4'd0, money_10, money_1};
+        next_nums = {state, 4'd0, money_10, money_1};
         if(hit && money < 7'd99) next_money = money + 1;
     end
 

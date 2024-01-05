@@ -1,18 +1,12 @@
 module judge (
     input clk, 
     input rst,
-    inout wire PS2_DATA,
-	inout wire PS2_CLK,
+    input ready,
+    input keydown,
+    input [8:0] last_change,
     input [3:0] pos_0,
     output reg hit
 );
-
-    /////////////////////////////////////////////////////////////////
-    // keyboard
-    /////////////////////////////////////////////////////////////////
-    wire [511:0] key_down;
-    wire [8:0] last_change;
-	wire been_ready, op_ready, op_keydown;
 
     reg [3:0] pos_hit;
     reg flag = 0;
@@ -28,19 +22,6 @@ module judge (
     parameter KEY_X = 9'b0_0010_0010;
     parameter KEY_C = 9'b0_0010_0001;
 
-    KeyboardDecoder key_de (
-		.key_down(key_down),
-		.last_change(last_change),
-		.key_valid(been_ready),
-		.PS2_DATA(PS2_DATA),
-		.PS2_CLK(PS2_CLK),
-		.rst(op_rst),
-		.clk(clk)
-	);
-
-    onepulse op1(.clk(clk), .signal(been_ready), .op(op_ready));
-    onepulse op2(.clk(clk), .signal(key_down[last_change]), .op(op_keydown));
-
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             flag <= 1'b0;
@@ -51,7 +32,7 @@ module judge (
                 flag <= 1'b0;
                 hit <= 1'b0;
             end
-            if(!flag && pos_0 != 0 && pos_0 == pos_hit && op_keydown && op_ready) begin
+            if(!flag && pos_0 != 0 && pos_0 == pos_hit && keydown && ready) begin
                 hit <= 1'b1;
                 flag <= 1'b1;
             end 

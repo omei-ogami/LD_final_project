@@ -1,7 +1,9 @@
 module script (
     input clk,
     input rst,
-    output reg [3:0] pos_0
+    input [3:0] state,
+    output reg [3:0] pos_0,
+    output reg gameend
 );
 
 parameter none = 4'd0;
@@ -20,10 +22,22 @@ parameter READY = 4'd11;
 reg [9:0] counter = 0;
 
 always @(posedge clk or posedge rst) begin
-    if(rst) counter <= 0;
+    if(rst) begin
+        counter <= 0;
+        gameend <= 1'b0;
+    end
     else begin
-        if(counter < 840) counter <= counter + 1;
-        else counter <= 0;
+        if(state == 4'd0) begin
+            counter <= 0;
+            gameend <= 1'b0;
+        end
+        else begin
+            if(counter < 840) counter <= counter + 1;
+            else begin
+                counter <= 0;
+                gameend <= 1'b1;
+            end
+        end
     end
 end
 
