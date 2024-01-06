@@ -5,8 +5,16 @@ module composite (
     input [11:0] background,
     input [11:0] enemyL,
     input [11:0] gamestart,
+    input [11:0] failure,
     output reg [11:0] pixel
 );
+
+    parameter GAMESTART = 4'd0;
+    parameter EASY = 4'd1;
+    parameter NORMAL = 4'd2;
+    parameter HARD = 4'd3;
+    parameter INFERNO = 4'd4;
+    parameter FAILURE = 4'd5; 
 
     reg [11:0] next_pixel;
 
@@ -17,7 +25,8 @@ module composite (
 
     always @(*) begin
         next_pixel = pixel;
-        if(state == 4'd0) next_pixel = gamestart;
+        if(state == GAMESTART) next_pixel = gamestart;
+        else if(state == FAILURE) next_pixel = failure;
         else begin
             if(enemyL == 12'h0) next_pixel = background;
             else next_pixel = enemyL;

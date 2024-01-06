@@ -4,6 +4,7 @@ module player (
     input damage,
     input hit,
     input [3:0] state,
+    output reg fail,
     output [9:0] life,
     output [6:0] display,
 	output [3:0] digit
@@ -16,6 +17,7 @@ module player (
     // life system
     /////////////////////////////////////////////////////////////////
     reg [3:0] total_damage = 0, next_damage;
+    reg next_fail;
     /////////////////////////////////////////////////////////////////
     // money system
     /////////////////////////////////////////////////////////////////
@@ -43,17 +45,22 @@ module player (
         if(rst) begin
             total_damage <= 0;
             money <= 0;
+            fail <= 1'b0;
         end
         else begin
             total_damage <= next_damage;
             money <= next_money;
             nums <= next_nums;
+            fail <= next_fail;
         end
     end
 
     always @(*) begin
-        
         next_damage = total_damage;
+        if(total_damage == 10) begin
+            next_fail = 1'b1;
+        end
+        else next_fail = 1'b0;
         if(state == 4'd0) next_damage = 0;
         else if(damage && total_damage < 10) next_damage = total_damage + 1;
     end
@@ -61,7 +68,8 @@ module player (
     always @(*) begin
         next_money = money;
         next_nums = {state, 4'd0, money_10, money_1};
-        if(hit && money < 7'd99) next_money = money + 1;
+        if(total_damage == 10) next_money = 0;
+        else if(hit && money < 7'd99) next_money = money + 1;
     end
 
 endmodule

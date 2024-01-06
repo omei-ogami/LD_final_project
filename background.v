@@ -1,6 +1,8 @@
 module background(
     input clk,
     input rst,
+    input clk_22,
+    input clk_25MHz,
     input [9:0] h_cnt,
     input [9:0] v_cnt,
     input [11:0] data,
@@ -8,21 +10,10 @@ module background(
 );
 
     /////////////////////////////////////////////////////////////////
-    // clocks
-    /////////////////////////////////////////////////////////////////
-    wire clk_25MHz;
-    wire clk_22;
-    /////////////////////////////////////////////////////////////////
     // VGA
     /////////////////////////////////////////////////////////////////
     wire [16:0] pixel_addr_bg;
     wire valid;
-
-    clock_divider clk_div_bg(
-        .clk(clk),
-        .clk1(clk_25MHz),
-        .clk22(clk_22)
-    );
 
     mem_addr_gen_bg addr_bg(
         .clk(clk_22),
@@ -48,9 +39,9 @@ module mem_addr_gen_bg(
    input rst,
    input [9:0] h_cnt,
    input [9:0] v_cnt,
-   output [16:0] pixel_addr
+   output [14:0] pixel_addr
    );
   
-   assign pixel_addr = ((h_cnt >> 1) + 320 * (v_cnt >> 1));  //640*480 --> 320*240 
+   assign pixel_addr = ((h_cnt >> 2) + 160 * (v_cnt >> 2));  //640*480 --> 320*240 
     
 endmodule

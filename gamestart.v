@@ -1,6 +1,8 @@
 module gamestart(
     input clk,
     input rst,
+    input clk_22,
+    input clk_25MHz,
     input ready,
     input keydown,
     input [8:0] last_change, 
@@ -29,12 +31,6 @@ module gamestart(
     parameter KEY_2 = 9'b0_0001_1110; // 2
     parameter KEY_3 = 9'b0_0010_0110; // 3
     parameter KEY_QMARK = 9'b0_0100_1010; // ?
-
-    clock_divider clk_div_gs(
-        .clk(clk),
-        .clk1(clk_25MHz),
-        .clk22(clk_22)
-    );
 
     mem_addr_gen_gs addr_gs(
         .clk(clk_22),
@@ -85,7 +81,6 @@ module mem_addr_gen_gs(
    output [14:0] pixel_addr
    );
   
-   assign pixel_addr = ((h_cnt >> 2) + 160 * (v_cnt >> 2)) % 19200;  
+   assign pixel_addr = ((h_cnt >> 2) + 160 * (v_cnt >> 2));  
     
 endmodule
-

@@ -1,6 +1,8 @@
 module enemyL(
     input clk,
     input rst,
+    input clk_22,
+    input clk_25MHz,
     input hit,
     input [3:0] pos,
     input [9:0] h_cnt,
@@ -11,24 +13,12 @@ module enemyL(
 );
 
     /////////////////////////////////////////////////////////////////
-    // clocks
-    /////////////////////////////////////////////////////////////////
-    wire clk_25MHz;
-    wire clk_22;
-    /////////////////////////////////////////////////////////////////
     // VGA
     /////////////////////////////////////////////////////////////////
     wire [14:0] pixel_addr_eL;
     reg [9:0] H, V, next_H, next_V;
 
     reg next_damage;
-
-
-    clock_divider clk_div_eL(
-        .clk(clk),
-        .clk1(clk_25MHz),
-        .clk22(clk_22)
-    );
 
     mem_addr_gen_eL addr_eL(
         .clk(clk_22),

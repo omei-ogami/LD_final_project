@@ -25,6 +25,7 @@ module lab(
     wire [11:0] data;
     wire [16:0] pixel_addr;
     wire [11:0] pixel, pixel_background, pixel_enemyL, pixel_gamestart;
+    wire [11:0] pixel_failure;
     wire valid;
     wire [9:0] h_cnt;   //640
     wire [9:0] v_cnt;   //480
@@ -38,6 +39,7 @@ module lab(
     // player info
     /////////////////////////////////////////////////////////////////
     wire damage, op_damage, op_hit;
+    wire return, fail;
     wire [2:0] level;
     /////////////////////////////////////////////////////////////////
     // state
@@ -52,7 +54,11 @@ module lab(
 
     // states
     parameter GAMESTART = 4'd0;
-    parameter EASY = 4'd1; 
+    parameter EASY = 4'd1;
+    parameter NORMAL = 4'd2;
+    parameter HARD = 4'd3;
+    parameter INFERNO = 4'd4;
+    parameter FAILURE = 4'd5; 
     
 
     assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel : 12'h0;
@@ -72,8 +78,12 @@ module lab(
         if(state == GAMESTART) begin
             if(level == EASY) next_state = EASY;
         end
-        else begin
+        else if(state == EASY) begin
             if(gameend) next_state = GAMESTART;
+            else if(fail) next_state = FAILURE;
+        end
+        else if(state == FAILURE) begin
+            if(return) next_state = GAMESTART;
         end
     end
 
@@ -84,12 +94,15 @@ module lab(
         .background(pixel_background),
         .enemyL(pixel_enemyL),
         .gamestart(pixel_gamestart),
+        .failure(pixel_failure),
         .pixel(pixel)
     );
 
     background vga_bg(
         .clk(clk),
         .rst(rst),
+        .clk_22(clk_22),
+        .clk_25MHz(clk_25MHz),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
@@ -100,6 +113,8 @@ module lab(
         .clk(clk),
         .rst(rst),
         .hit(hit),
+        .clk_22(clk_22),
+        .clk_25MHz(clk_25MHz),
         .pos(pos_0),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
@@ -162,6 +177,7 @@ module lab(
         .clk(clk),
         .rst(rst),
         .damage(op_damage),
+        .fail(fail),
         .hit(op_hit),
         .state(state),
         .life(led),
@@ -172,6 +188,8 @@ module lab(
     gamestart start(
         .clk(clk),
         .rst(rst),
+        .clk_22(clk_22),
+        .clk_25MHz(clk_25MHz),
         .ready(op_ready),
         .keydown(op_keydown),
         .last_change(last_change),
@@ -180,6 +198,21 @@ module lab(
         .data(data),
         .pixel(pixel_gamestart),
         .level(level)
+    );
+
+    failure failed(
+        .clk(clk),
+        .rst(rst),
+        .clk_22(clk_22),
+        .clk_25MHz(clk_25MHz),
+        .ready(op_ready),
+        .keydown(op_keydown),
+        .last_change(last_change),
+        .h_cnt(h_cnt),
+        .v_cnt(v_cnt),
+        .data(data),
+        .pixel(pixel_failure),
+        .return(return)
     );
 
     
