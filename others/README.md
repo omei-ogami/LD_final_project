@@ -10,7 +10,8 @@ TODO
 - [x] Fail scene
 - [x] Level 1
 - [ ] Second Enemy
-- [ ] Coins -> Admission ticket
+- [x] Coins -> Admission ticket
+- [ ] Level 2
 
 
 Debug
@@ -19,4 +20,4 @@ Debug
 
 Update
 ---
-2024/1/7 1:10
+2024/1/7 4:40
