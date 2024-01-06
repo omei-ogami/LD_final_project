@@ -3,9 +3,11 @@ module player (
     input rst,
     input damage,
     input hit,
+    input ticket,
     input [3:0] state,
     output reg fail,
     output [9:0] life,
+    output [6:0] money,
     output [6:0] display,
 	output [3:0] digit
 );
@@ -21,7 +23,7 @@ module player (
     /////////////////////////////////////////////////////////////////
     // money system
     /////////////////////////////////////////////////////////////////
-    reg [6:0] money = 0, next_money;
+    reg [6:0] money = 20, next_money;
     reg [15:0] nums = 0, next_nums;
     wire [3:0] money_10, money_1;
 
@@ -44,7 +46,7 @@ module player (
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             total_damage <= 0;
-            money <= 0;
+            money <= 7'd20;
             fail <= 1'b0;
         end
         else begin
@@ -61,17 +63,31 @@ module player (
             next_fail = 1'b1;
         end
         else next_fail = 1'b0;
-        if(state == 4'd0) next_damage = 0;
+        if(state == 4'd0 || state == 4'd5) next_damage = 0;
         else if(damage && total_damage < 10) next_damage = total_damage + 1;
     end
 
     always @(*) begin
         next_money = money;
         next_nums = {state, 4'd0, money_10, money_1};
-        if(total_damage == 10) next_money = 0;
-        else if(hit && money < 7'd99) next_money = money + 1;
+        if(ticket) begin
+            if(money > 10) next_money = money - 10;
+            else next_money = 0;
+        end
+        else next_money = money;
+        // state 1-4 : play
+        if(state == 4'd1 || state == 4'd2 || state == 4'd3 || state == 4'd4) begin
+            if(total_damage == 10) begin
+                if(money > 7'd10) next_money = money - 5;
+                else next_money = 0;
+            end
+            else if(hit && money < 7'd99) next_money = money + 1;
+        end
+        // state 5 : failure
+        else if(state == 4'd5)begin
+            next_money = money;
+        end
     end
-
 endmodule
 
 module divider (

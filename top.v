@@ -40,7 +40,9 @@ module lab(
     /////////////////////////////////////////////////////////////////
     wire damage, op_damage, op_hit;
     wire return, fail;
+    wire ticket, op_ticket;
     wire [2:0] level;
+    wire [6:0] money;
     /////////////////////////////////////////////////////////////////
     // state
     /////////////////////////////////////////////////////////////////
@@ -159,6 +161,7 @@ module lab(
 
     onepulse op1(.clk(clk), .signal(been_ready), .op(op_ready));
     onepulse op2(.clk(clk), .signal(key_down[last_change]), .op(op_keydown));
+    
 
     judge hit_judge(
         .clk(clk),
@@ -172,6 +175,7 @@ module lab(
 
     onepulse op_Damage(.clk(clk), .signal(damage), .op(op_damage));
     onepulse op_Hit(.clk(clk), .signal(hit), .op(op_hit));
+    onepulse op_Ticket(.clk(clk), .signal(ticket), .op(op_ticket));
 
     player play(
         .clk(clk),
@@ -179,8 +183,10 @@ module lab(
         .damage(op_damage),
         .fail(fail),
         .hit(op_hit),
+        .ticket(op_ticket),
         .state(state),
         .life(led),
+        .money(money),
         .display(DISPLAY),
         .digit(DIGIT)
     );
@@ -192,12 +198,14 @@ module lab(
         .clk_25MHz(clk_25MHz),
         .ready(op_ready),
         .keydown(op_keydown),
+        .money(money),
         .last_change(last_change),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
         .pixel(pixel_gamestart),
-        .level(level)
+        .level(level),
+        .ticket(ticket)
     );
 
     failure failed(

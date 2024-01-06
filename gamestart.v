@@ -5,12 +5,14 @@ module gamestart(
     input clk_25MHz,
     input ready,
     input keydown,
+    input [6:0] money,
     input [8:0] last_change, 
     input [9:0] h_cnt,
     input [9:0] v_cnt,
     input [11:0] data,
     output [11:0] pixel,
-    output reg [2:0] level
+    output reg [2:0] level,
+    output reg ticket
 );
 
     /////////////////////////////////////////////////////////////////
@@ -25,6 +27,7 @@ module gamestart(
     wire valid;
 
     reg [2:0] next_level;
+    reg next_ticket;
     
 
     parameter KEY_1 = 9'b0_0001_0110; // 1
@@ -52,10 +55,18 @@ module gamestart(
     always @(posedge clk or posedge rst) begin
         if(rst) begin
             level <= 3'd0;
+            ticket <= 1'b0;
         end
         else begin
             if(keydown && ready) begin
-                level <= next_level;
+                if(money >= 10) begin
+                    level <= next_level;
+                    ticket <= next_ticket;
+                end
+                else begin
+                    level <= 3'd0;
+                    ticket <= 1'b0;
+                end
             end
         end
     end
@@ -63,11 +74,17 @@ module gamestart(
     // decode
     always @(*) begin
         case (last_change)
-            KEY_1: next_level = 3'd1;
+            KEY_1: begin
+                next_level = 3'd1;
+                next_ticket = 1'b1;
+            end
             KEY_2: next_level = 3'd2;
             KEY_3: next_level = 3'd3;
             KEY_QMARK: next_level = 3'd4;
-            default: next_level = 3'd0;
+            default: begin
+                next_level = 3'd0;
+                next_ticket = 1'b0;
+            end
         endcase
     end
     
