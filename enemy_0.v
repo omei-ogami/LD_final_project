@@ -10,7 +10,7 @@ module enemy0(
     input [9:0] h_cnt,
     input [9:0] v_cnt,
     input [11:0] data,
-    output [11:0] pixel,
+    output [11:0] pixel0,
     output reg damage
 );
 
@@ -36,7 +36,7 @@ module enemy0(
         .wea(0),
         .addra(pixel_addr_e0),
         .dina(data[11:0]),
-        .douta(pixel)
+        .douta(pixel0)
     ); 
 
     always @(posedge clk) begin
@@ -48,8 +48,8 @@ module enemy0(
         if((pos_0 != 0 && pos_0 != 10) || hit_0) next_damage = 1'b0;
         else if(!hit_0) next_damage = 1'b1; 
         
-        // if((pos_1 != 0 && pos_1 != 10) || hit_1) next_damage = 1'b0;
-        // else if(!hit_1) next_damage = 1'b1; 
+    //    if((pos_1 != 0 && pos_1 != 10 || (pos_1 >= 12 && pos_1 <= 20)) || hit_1) next_damage = 1'b0;
+    //    else if(!hit_1) next_damage = 1'b1; 
     end
 
     enemy_pos Pos_00(
@@ -61,6 +61,8 @@ module enemy0(
         .H(H),
         .V(V)
     );
+
+
     
 endmodule
 

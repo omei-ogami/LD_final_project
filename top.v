@@ -127,7 +127,7 @@ module lab(
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
-        .pixel(pixel_enemy0),
+        .pixel0(pixel_enemy0),
         .damage(damage_0)
     );
 

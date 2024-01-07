@@ -46,7 +46,7 @@ module enemy1(
 
     always @(*) begin
         next_damage = damage;
-        if(hit_1) next_damage = 1'b1;
+        if(hit_1 && pos_1 >= 12 && pos_1 <= 20) next_damage = 1'b1;
         else next_damage = 1'b0; 
     end
 
