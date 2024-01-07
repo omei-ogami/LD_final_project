@@ -5,11 +5,13 @@ module judge (
     input keydown,
     input [8:0] last_change,
     input [3:0] pos_0,
-    output reg hit
+    input [3:0] pos_1,
+    output reg hit_0,
+    output reg hit_1
 );
 
     reg [3:0] pos_hit;
-    reg flag = 0;
+    reg flag_0 = 0, flag_1 = 0;
 
     // keycodes
     parameter KEY_Q = 9'b0_0001_0101;
@@ -24,20 +26,34 @@ module judge (
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
-            flag <= 1'b0;
-            hit <= 1'b0;
+            flag_0 <= 1'b0;
+            flag_1 <= 1'b0;
+            hit_0 <= 1'b0;
+            hit_1 <= 1'b0;
         end
         else begin
+            // judge_0
             if(pos_0 == 11) begin
-                flag <= 1'b0;
-                hit <= 1'b0;
+                flag_0 <= 1'b0;
+                hit_0 <= 1'b0;
             end
-            if(!flag && pos_0 != 0 && pos_0 == pos_hit && keydown && ready) begin
-                hit <= 1'b1;
-                flag <= 1'b1;
+            if(!flag_0 && pos_0 != 0 && pos_0 == pos_hit && keydown && ready) begin
+                hit_0 <= 1'b1;
+                flag_0 <= 1'b1;
             end 
-            else if(flag) hit <= 1'b1;
-            else hit <= 1'b0;
+            else if(flag_0) hit_0 <= 1'b1;
+            else hit_0 <= 1'b0;
+            // judge_1
+            if(pos_1 == 11) begin
+                flag_1 <= 1'b0;
+                hit_1 <= 1'b0;
+            end
+            if(!flag_1 && pos_1 != 0 && pos_1 == pos_hit + 11 && keydown && ready) begin
+                hit_1 <= 1'b1;
+                flag_1 <= 1'b1;
+            end 
+            else if(flag_1) hit_1 <= 1'b1;
+            else hit_1 <= 1'b0;
         end
     end
 

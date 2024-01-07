@@ -1,52 +1,18 @@
-module enemyL(
+module enemy_pos (
     input clk,
-    input rst,
-    input clk_22,
-    input clk_25MHz,
-    input hit,
-    input [3:0] pos,
     input [9:0] h_cnt,
     input [9:0] v_cnt,
-    input [11:0] data,
-    output [11:0] pixel,
-    output reg damage
+    input [4:0] pos,
+    input hit,
+    output reg [9:0] H,
+    output reg [9:0] V
 );
 
-    /////////////////////////////////////////////////////////////////
-    // VGA
-    /////////////////////////////////////////////////////////////////
-    wire [14:0] pixel_addr_eL;
-    reg [9:0] H, V, next_H, next_V;
-
-    reg next_damage;
-
-    mem_addr_gen_eL addr_eL(
-        .clk(clk_22),
-        .rst(rst),
-        .h_cnt(H),
-        .v_cnt(V),
-        .pixel_addr(pixel_addr_eL)
-    );
-     
- 
-    blk_mem_gen_1 image_eL(
-        .clka(clk_25MHz),
-        .wea(0),
-        .addra(pixel_addr_eL),
-        .dina(data[11:0]),
-        .douta(pixel)
-    ); 
+    reg [9:0] next_H, next_V;
 
     always @(posedge clk) begin
         H <= next_H;
         V <= next_V;
-        damage <= next_damage;
-    end
-
-    always @(*) begin
-        next_damage = damage;
-        if((pos != 0 && pos != 10) || hit) next_damage = 1'b0;
-        else if(!hit) next_damage = 1'b1; 
     end
 
     always @(*) begin
@@ -100,20 +66,5 @@ module enemyL(
             next_V = 0;
         end
     end
-    
-endmodule
-
-
-
-module mem_addr_gen_eL(
-    input clk,
-    input rst,
-    input [9:0] h_cnt,
-    input [9:0] v_cnt,
-    output [14:0] pixel_addr
-    );
-
-    assign pixel_addr = (h_cnt + v_cnt * 160) % 19200;  //640*480 --> 160*120 
-    
     
 endmodule

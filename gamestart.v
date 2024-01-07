@@ -16,14 +16,9 @@ module gamestart(
 );
 
     /////////////////////////////////////////////////////////////////
-    // clocks
-    /////////////////////////////////////////////////////////////////
-    wire clk_25MHz;
-    wire clk_22;
-    /////////////////////////////////////////////////////////////////
     // VGA
     /////////////////////////////////////////////////////////////////
-    wire [16:0] pixel_addr_gs;
+    wire [14:0] pixel_addr_gs;
     wire valid;
 
     reg [2:0] next_level;
@@ -78,7 +73,10 @@ module gamestart(
                 next_level = 3'd1;
                 next_ticket = 1'b1;
             end
-            KEY_2: next_level = 3'd2;
+            KEY_2: begin
+                next_level = 3'd2;
+                next_ticket = 1'b1;
+            end
             KEY_3: next_level = 3'd3;
             KEY_QMARK: next_level = 3'd4;
             default: begin

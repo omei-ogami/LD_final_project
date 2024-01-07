@@ -3,7 +3,8 @@ module composite (
     input rst,
     input [3:0] state,
     input [11:0] background,
-    input [11:0] enemyL,
+    input [11:0] enemy0,
+    input [11:0] enemy1,
     input [11:0] gamestart,
     input [11:0] failure,
     output reg [11:0] pixel
@@ -28,8 +29,11 @@ module composite (
         if(state == GAMESTART) next_pixel = gamestart;
         else if(state == FAILURE) next_pixel = failure;
         else begin
-            if(enemyL == 12'h0) next_pixel = background;
-            else next_pixel = enemyL;
+            if(enemy0 == 12'h0 && enemy1 == 12'h0) next_pixel = background;
+            else begin
+                if(enemy0 != 12'h0) next_pixel = enemy0;
+                else next_pixel = enemy1;
+            end
         end
     end
     

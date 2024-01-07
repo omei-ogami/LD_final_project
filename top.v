@@ -9,7 +9,8 @@ module lab(
     output hsync,
     output vsync,
     output [9:0] led,
-    output hit,
+    output hit_0,
+    output hit_1,
     output [6:0] DISPLAY,
 	output [3:0] DIGIT
 );
@@ -24,8 +25,8 @@ module lab(
     /////////////////////////////////////////////////////////////////
     wire [11:0] data;
     wire [16:0] pixel_addr;
-    wire [11:0] pixel, pixel_background, pixel_enemyL, pixel_gamestart;
-    wire [11:0] pixel_failure;
+    wire [11:0] pixel, pixel_background, pixel_enemy0, pixel_gamestart;
+    wire [11:0] pixel_failure, pixel_enemy1;
     wire valid;
     wire [9:0] h_cnt;   //640
     wire [9:0] v_cnt;   //480
@@ -33,12 +34,13 @@ module lab(
     // script
     /////////////////////////////////////////////////////////////////
     wire [7:0] counter;
-    wire [3:0] pos_0;
+    wire [4:0] pos_0, pos_1;
     wire gameend;
     /////////////////////////////////////////////////////////////////
     // player info
     /////////////////////////////////////////////////////////////////
-    wire damage, op_damage, op_hit;
+    wire damage_0, op_damage_0, damage_1, op_damage_1;
+    wire op_hit_0, op_hit_1;
     wire return, fail;
     wire ticket, op_ticket;
     wire [2:0] level;
@@ -79,8 +81,9 @@ module lab(
         next_state = state;
         if(state == GAMESTART) begin
             if(level == EASY) next_state = EASY;
+            else if(level == NORMAL) next_state = NORMAL;
         end
-        else if(state == EASY) begin
+        else if(state == EASY || state == NORMAL) begin
             if(gameend) next_state = GAMESTART;
             else if(fail) next_state = FAILURE;
         end
@@ -94,7 +97,8 @@ module lab(
         .rst(rst),
         .state(state),
         .background(pixel_background),
-        .enemyL(pixel_enemyL),
+        .enemy0(pixel_enemy0),
+        .enemy1(pixel_enemy1),
         .gamestart(pixel_gamestart),
         .failure(pixel_failure),
         .pixel(pixel)
@@ -111,18 +115,34 @@ module lab(
         .pixel(pixel_background)
     );
 
-    enemyL vga_enemyL(
+    enemy0 vga_enemy0(
         .clk(clk),
         .rst(rst),
-        .hit(hit),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
-        .pos(pos_0),
+        .hit_0(hit_0),
+        .hit_1(hit_1),
+        .pos_0(pos_0),
+        .pos_1(pos_1),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
-        .pixel(pixel_enemyL),
-        .damage(damage)
+        .pixel(pixel_enemy0),
+        .damage(damage_0)
+    );
+
+    enemy1 vga_enemy1(
+        .clk(clk),
+        .rst(rst),
+        .clk_22(clk_22),
+        .clk_25MHz(clk_25MHz),
+        .hit_1(hit_1),
+        .pos_1(pos_1),
+        .h_cnt(h_cnt),
+        .v_cnt(v_cnt),
+        .data(data),
+        .pixel(pixel_enemy1),
+        .damage(damage_1)
     );
 
     clock_divider clk_div(
@@ -146,6 +166,7 @@ module lab(
         .rst(rst),
         .state(state),
         .pos_0(pos_0),
+        .pos_1(pos_1),
         .gameend(gameend)
     );
 
@@ -170,23 +191,29 @@ module lab(
         .keydown(op_keydown),
         .last_change(last_change),
         .pos_0(pos_0),
-        .hit(hit)
+        .pos_1(pos_1),
+        .hit_0(hit_0),
+        .hit_1(hit_1)
     );
 
-    onepulse op_Damage(.clk(clk), .signal(damage), .op(op_damage));
-    onepulse op_Hit(.clk(clk), .signal(hit), .op(op_hit));
+    onepulse op_Damage0(.clk(clk), .signal(damage_0), .op(op_damage_0));
+    onepulse op_Damage1(.clk(clk), .signal(damage_1), .op(op_damage_1));
+    onepulse op_Hit0(.clk(clk), .signal(hit_0), .op(op_hit_0));
+    onepulse op_Hit1(.clk(clk), .signal(hit_1), .op(op_hit_1));
     onepulse op_Ticket(.clk(clk), .signal(ticket), .op(op_ticket));
 
     player play(
         .clk(clk),
         .rst(rst),
-        .damage(op_damage),
+        .damage_0(op_damage_0),
+        .damage_1(op_damage_1),
         .fail(fail),
-        .hit(op_hit),
+        .hit_0(op_hit_0),
+        .hit_1(op_hit_1),
         .ticket(op_ticket),
         .state(state),
         .life(led),
-        .money(money),
+        .total_money(money),
         .display(DISPLAY),
         .digit(DIGIT)
     );
