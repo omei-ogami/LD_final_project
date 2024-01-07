@@ -13,7 +13,7 @@ TODO
 - [x] Coins -> Admission ticket
 - [x] Level 2
 - [x] Level 3
-- [ ] music
+- [x] music
 - [ ] Level 4 ???
 
 
@@ -23,4 +23,4 @@ Debug
 
 Update
 ---
-2024/1/8 1:30
+2024/1/8 5:00
