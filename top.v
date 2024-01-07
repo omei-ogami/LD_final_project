@@ -10,7 +10,11 @@ module lab(
     output vsync,
     output [9:0] led,
     output [6:0] DISPLAY,
-	output [3:0] DIGIT
+	output [3:0] DIGIT,
+    output audio_mclk, 
+    output audio_lrck, 
+    output audio_sck,  
+    output audio_sdin
 );
 
     /////////////////////////////////////////////////////////////////
@@ -253,6 +257,17 @@ module lab(
         .data(data),
         .pixel(pixel_failure),
         .return(return)
+    );
+
+    music music(
+        .clk(clk),
+        .clk_22(clk_22),
+        .reset(rst),
+        .mode(state),
+        .audio_mclk(audio_mclk),     
+        .audio_lrck(audio_lrck),   
+        .audio_sck(audio_sck),  
+        .audio_sdin(audio_sdin) 
     );
 
     
