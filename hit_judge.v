@@ -6,12 +6,14 @@ module judge (
     input [8:0] last_change,
     input [3:0] pos_0,
     input [3:0] pos_1,
+    input [3:0] pos_2,
     output reg hit_0,
-    output reg hit_1
+    output reg hit_1,
+    output reg hit_2
 );
 
     reg [3:0] pos_hit;
-    reg flag_0 = 0, flag_1 = 0;
+    reg flag_0 = 0, flag_1 = 0, flag_2 = 0;
 
     // keycodes
     parameter KEY_Q = 9'b0_0001_0101;
@@ -48,12 +50,23 @@ module judge (
                 flag_1 <= 1'b0;
                 hit_1 <= 1'b0;
             end
-            if(!flag_1 && pos_1 != 0 && pos_1 == pos_hit + 11 && keydown && ready) begin
+            if(!flag_1 && pos_1 != 0 && pos_1 == pos_hit && keydown && ready) begin
                 hit_1 <= 1'b1;
                 flag_1 <= 1'b1;
             end 
             else if(flag_1) hit_1 <= 1'b1;
             else hit_1 <= 1'b0;
+            // judge_2
+            if(pos_2 == 11) begin
+                flag_2 <= 1'b0;
+                hit_2 <= 1'b0;
+            end
+            if(!flag_2 && pos_2 != 0 && pos_2 == pos_hit + 11 && keydown && ready) begin
+                hit_2 <= 1'b1;
+                flag_2 <= 1'b1;
+            end 
+            else if(flag_2) hit_2 <= 1'b1;
+            else hit_2 <= 1'b0;
         end
     end
 

@@ -77,7 +77,10 @@ module gamestart(
                 next_level = 3'd2;
                 next_ticket = 1'b1;
             end
-            KEY_3: next_level = 3'd3;
+            KEY_3: begin
+                next_level = 3'd3;
+                next_ticket = 1'b1;
+            end
             KEY_QMARK: next_level = 3'd4;
             default: begin
                 next_level = 3'd0;

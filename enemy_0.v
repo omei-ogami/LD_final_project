@@ -11,7 +11,8 @@ module enemy0(
     input [9:0] v_cnt,
     input [11:0] data,
     output [11:0] pixel0,
-    output reg damage
+    output reg damage_0,
+    output reg damage_1
 );
 
     /////////////////////////////////////////////////////////////////
@@ -20,7 +21,7 @@ module enemy0(
     wire [14:0] pixel_addr_e0;
     wire [9:0] H, V;
 
-    reg next_damage;
+    reg next_damage_0, next_damage_1;
 
     mem_addr_gen_e0 addr_e0(
         .clk(clk_22),
@@ -40,13 +41,17 @@ module enemy0(
     ); 
 
     always @(posedge clk) begin
-        damage <= next_damage;
+        damage_0 <= next_damage_0;
+        damage_1 <= next_damage_1;
     end
 
     always @(*) begin
-        next_damage = damage;
-        if((pos_0 != 0 && pos_0 != 10) || hit_0) next_damage = 1'b0;
-        else if(!hit_0) next_damage = 1'b1; 
+        next_damage_0 = damage_0;
+        next_damage_1 = damage_1;
+        if((pos_0 != 0 && pos_0 != 10) || hit_0) next_damage_0 = 1'b0;
+        else if(!hit_0) next_damage_0 = 1'b1;
+        if((pos_1 != 0 && pos_1 != 10) || hit_1) next_damage_1 = 1'b0;
+        else if(!hit_1) next_damage_1 = 1'b1; 
         
     //    if((pos_1 != 0 && pos_1 != 10 || (pos_1 >= 12 && pos_1 <= 20)) || hit_1) next_damage = 1'b0;
     //    else if(!hit_1) next_damage = 1'b1; 
@@ -56,7 +61,9 @@ module enemy0(
         .clk(clk),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
-        .pos(pos_0),
+        .pos_0(pos_0),
+        .pos_1(pos_1),
+        .pos_2(5'd0),
         .hit(hit_0),
         .H(H),
         .V(V)

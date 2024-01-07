@@ -12,7 +12,9 @@ TODO
 - [x] Second Enemy
 - [x] Coins -> Admission ticket
 - [x] Level 2
-- [ ] Level 3
+- [x] Level 3
+- [ ] music
+- [ ] Level 4 ???
 
 
 Debug

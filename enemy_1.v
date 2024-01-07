@@ -3,8 +3,8 @@ module enemy1(
     input rst,
     input clk_22,
     input clk_25MHz,
-    input hit_1,
-    input [4:0] pos_1,
+    input hit_2,
+    input [4:0] pos_2,
     input [9:0] h_cnt,
     input [9:0] v_cnt,
     input [11:0] data,
@@ -17,7 +17,6 @@ module enemy1(
     /////////////////////////////////////////////////////////////////
     wire [14:0] pixel_addr_e1;
     wire [9:0] H, V;
-    reg [4:0] pos;
 
     reg next_damage;
 
@@ -40,13 +39,11 @@ module enemy1(
 
     always @(posedge clk) begin
         damage <= next_damage;
-        if(pos_1 > 11) pos <= pos_1 - 11;
-        else pos <= pos_1;
     end
 
     always @(*) begin
         next_damage = damage;
-        if(hit_1 && pos_1 >= 12 && pos_1 <= 20) next_damage = 1'b1;
+        if(hit_2 && pos_2 >= 12 && pos_2 <= 20) next_damage = 1'b1;
         else next_damage = 1'b0; 
     end
 
@@ -54,8 +51,10 @@ module enemy1(
         .clk(clk),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
-        .pos(pos),
-        .hit(hit_1),
+        .pos_0(5'd0),
+        .pos_1(5'd0),
+        .pos_2(pos_2),
+        .hit(hit_2),
         .H(H),
         .V(V)
     );

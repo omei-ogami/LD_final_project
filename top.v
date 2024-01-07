@@ -9,8 +9,6 @@ module lab(
     output hsync,
     output vsync,
     output [9:0] led,
-    output hit_0,
-    output hit_1,
     output [6:0] DISPLAY,
 	output [3:0] DIGIT
 );
@@ -34,13 +32,13 @@ module lab(
     // script
     /////////////////////////////////////////////////////////////////
     wire [7:0] counter;
-    wire [4:0] pos_0, pos_1;
+    wire [4:0] pos_0, pos_1, pos_2;
     wire gameend;
     /////////////////////////////////////////////////////////////////
     // player info
     /////////////////////////////////////////////////////////////////
-    wire damage_0, op_damage_0, damage_1, op_damage_1;
-    wire op_hit_0, op_hit_1;
+    wire damage_0, op_damage_0, damage_1, op_damage_1, damage_2, op_damage_2;
+    wire hit_0, hit_1, hit_2, op_hit_0, op_hit_1, op_hit_2;
     wire return, fail;
     wire ticket, op_ticket;
     wire [2:0] level;
@@ -82,8 +80,9 @@ module lab(
         if(state == GAMESTART) begin
             if(level == EASY) next_state = EASY;
             else if(level == NORMAL) next_state = NORMAL;
+            else if(level == HARD) next_state = HARD;
         end
-        else if(state == EASY || state == NORMAL) begin
+        else if(state == EASY || state == NORMAL || state == HARD) begin
             if(gameend) next_state = GAMESTART;
             else if(fail) next_state = FAILURE;
         end
@@ -128,7 +127,8 @@ module lab(
         .v_cnt(v_cnt),
         .data(data),
         .pixel0(pixel_enemy0),
-        .damage(damage_0)
+        .damage_0(damage_0),
+        .damage_1(damage_1)
     );
 
     enemy1 vga_enemy1(
@@ -136,13 +136,13 @@ module lab(
         .rst(rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
-        .hit_1(hit_1),
-        .pos_1(pos_1),
+        .hit_2(hit_2),
+        .pos_2(pos_2),
         .h_cnt(h_cnt),
         .v_cnt(v_cnt),
         .data(data),
         .pixel(pixel_enemy1),
-        .damage(damage_1)
+        .damage(damage_2)
     );
 
     clock_divider clk_div(
@@ -161,12 +161,13 @@ module lab(
         .v_cnt(v_cnt)
     );
 
-    script pos_enemy0(
+    script pos_enemy(
         .clk(clk_22),
         .rst(rst),
         .state(state),
         .pos_0(pos_0),
         .pos_1(pos_1),
+        .pos_2(pos_2),
         .gameend(gameend)
     );
 
@@ -192,14 +193,18 @@ module lab(
         .last_change(last_change),
         .pos_0(pos_0),
         .pos_1(pos_1),
+        .pos_2(pos_2),
         .hit_0(hit_0),
-        .hit_1(hit_1)
+        .hit_1(hit_1),
+        .hit_2(hit_2)
     );
 
     onepulse op_Damage0(.clk(clk), .signal(damage_0), .op(op_damage_0));
     onepulse op_Damage1(.clk(clk), .signal(damage_1), .op(op_damage_1));
+    onepulse op_Damage2(.clk(clk), .signal(damage_2), .op(op_damage_2));
     onepulse op_Hit0(.clk(clk), .signal(hit_0), .op(op_hit_0));
     onepulse op_Hit1(.clk(clk), .signal(hit_1), .op(op_hit_1));
+    onepulse op_Hit2(.clk(clk), .signal(hit_2), .op(op_hit_2));
     onepulse op_Ticket(.clk(clk), .signal(ticket), .op(op_ticket));
 
     player play(
