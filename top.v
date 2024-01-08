@@ -1,6 +1,7 @@
 module lab(
     input clk,
     input rst,
+    input cheat,
     inout wire PS2_DATA,
 	inout wire PS2_CLK,
     output [3:0] vgaRed,
@@ -28,7 +29,7 @@ module lab(
     wire [11:0] data;
     wire [16:0] pixel_addr;
     wire [11:0] pixel, pixel_background, pixel_enemy0, pixel_gamestart;
-    wire [11:0] pixel_failure, pixel_enemy1;
+    wire [11:0] pixel_failure, pixel_enemy1, pixel_enemy2;
     wire valid;
     wire [9:0] h_cnt;   //640
     wire [9:0] v_cnt;   //480
@@ -36,13 +37,13 @@ module lab(
     // script
     /////////////////////////////////////////////////////////////////
     wire [7:0] counter;
-    wire [4:0] pos_0, pos_1, pos_2;
+    wire [4:0] pos_0, pos_1, pos_2, pos_3;
     wire gameend;
     /////////////////////////////////////////////////////////////////
     // player info
     /////////////////////////////////////////////////////////////////
-    wire damage_0, op_damage_0, damage_1, op_damage_1, damage_2, op_damage_2;
-    wire hit_0, hit_1, hit_2, op_hit_0, op_hit_1, op_hit_2;
+    wire damage_0, op_damage_0, damage_1, op_damage_1, damage_2, op_damage_2, damage_3, op_damage_3;
+    wire hit_0, hit_1, hit_2, hit_3, op_hit_0, op_hit_1, op_hit_2, op_hit_3;
     wire return, fail;
     wire ticket, op_ticket;
     wire [2:0] level;
@@ -85,8 +86,9 @@ module lab(
             if(level == EASY) next_state = EASY;
             else if(level == NORMAL) next_state = NORMAL;
             else if(level == HARD) next_state = HARD;
+            else if(level == INFERNO) next_state = INFERNO;
         end
-        else if(state == EASY || state == NORMAL || state == HARD) begin
+        else if(state == EASY || state == NORMAL || state == HARD || state == INFERNO) begin
             if(gameend) next_state = GAMESTART;
             else if(fail) next_state = FAILURE;
         end
@@ -102,6 +104,7 @@ module lab(
         .background(pixel_background),
         .enemy0(pixel_enemy0),
         .enemy1(pixel_enemy1),
+        .enemy2(pixel_enemy2),
         .gamestart(pixel_gamestart),
         .failure(pixel_failure),
         .pixel(pixel)
@@ -149,6 +152,20 @@ module lab(
         .damage(damage_2)
     );
 
+    enemy2 vga_enemy2(
+        .clk(clk),
+        .rst(rst),
+        .clk_22(clk_22),
+        .clk_25MHz(clk_25MHz),
+        .hit_3(hit_3),
+        .pos_3(pos_3),
+        .h_cnt(h_cnt),
+        .v_cnt(v_cnt),
+        .data(data),
+        .pixel(pixel_enemy2),
+        .damage(damage_3)
+    );
+
     clock_divider clk_div(
         .clk(clk),
         .clk1(clk_25MHz),
@@ -172,6 +189,7 @@ module lab(
         .pos_0(pos_0),
         .pos_1(pos_1),
         .pos_2(pos_2),
+        .pos_3(pos_3),
         .gameend(gameend)
     );
 
@@ -198,27 +216,34 @@ module lab(
         .pos_0(pos_0),
         .pos_1(pos_1),
         .pos_2(pos_2),
+        .pos_3(pos_3),
         .hit_0(hit_0),
         .hit_1(hit_1),
-        .hit_2(hit_2)
+        .hit_2(hit_2),
+        .hit_3(hit_3)
     );
 
     onepulse op_Damage0(.clk(clk), .signal(damage_0), .op(op_damage_0));
     onepulse op_Damage1(.clk(clk), .signal(damage_1), .op(op_damage_1));
     onepulse op_Damage2(.clk(clk), .signal(damage_2), .op(op_damage_2));
+    onepulse op_Damage3(.clk(clk), .signal(damage_3), .op(op_damage_3));
     onepulse op_Hit0(.clk(clk), .signal(hit_0), .op(op_hit_0));
     onepulse op_Hit1(.clk(clk), .signal(hit_1), .op(op_hit_1));
     onepulse op_Hit2(.clk(clk), .signal(hit_2), .op(op_hit_2));
+    onepulse op_Hit3(.clk(clk), .signal(hit_3), .op(op_hit_3));
     onepulse op_Ticket(.clk(clk), .signal(ticket), .op(op_ticket));
 
     player play(
         .clk(clk),
         .rst(rst),
+        .cheat(cheat),
         .damage_0(op_damage_0),
         .damage_1(op_damage_1),
         .fail(fail),
         .hit_0(op_hit_0),
         .hit_1(op_hit_1),
+        .hit_2(op_hit_2),
+        .hit_3(op_hit_3),
         .ticket(op_ticket),
         .state(state),
         .life(led),

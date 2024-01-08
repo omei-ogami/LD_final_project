@@ -1,10 +1,15 @@
 module player (
     input clk,
     input rst,
+    input cheat,
     input damage_0,
     input damage_1,
+    input damage_2,
+    input damage_3,
     input hit_0,
     input hit_1,
+    input hit_2,
+    input hit_3,
     input ticket,
     input [3:0] state,
     output reg fail,
@@ -16,6 +21,7 @@ module player (
 
     parameter FULL_LIFE = 10'b1111111111;
     parameter NONLIFE = 10'b0000000000;
+    parameter MID_DASH = 4'd10;
 
     /////////////////////////////////////////////////////////////////
     // life system
@@ -45,7 +51,7 @@ module player (
         .digit_one(money_1)
     );
 
-    assign life = (state == 4'd0)? NONLIFE : FULL_LIFE >> total_damage;
+    assign life = (state == 4'd0 || state == 4'd5)? NONLIFE : FULL_LIFE >> total_damage;
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
@@ -54,8 +60,14 @@ module player (
             fail <= 1'b0;
         end
         else begin
-            total_damage <= next_damage;
-            money <= next_money;
+            if(cheat) begin
+                total_damage <= 0;
+                money <= 99;
+            end
+            else begin
+                total_damage <= next_damage;
+                money <= next_money;
+            end
             nums <= next_nums;
             fail <= next_fail;
         end
@@ -70,13 +82,16 @@ module player (
         if(state == 4'd0 || state == 4'd5) next_damage = 0;
         else begin
             if(damage_0) next_damage = next_damage + 1;
-            if(damage_1) next_damage = next_damage + 2;
+            if(damage_1) next_damage = next_damage + 1;
+            if(damage_2) next_damage = next_damage + 2;
+            if(damage_3) next_damage = next_damage + 2;
         end
     end
 
     always @(*) begin
         next_money = money;
-        next_nums = {state, 4'd0, money_10, money_1};
+        if(state != 4'd0 && state != 4'd5) next_nums = {state, MID_DASH, money_10, money_1};
+        else next_nums = {MID_DASH, MID_DASH, money_10, money_1};
         if(ticket) begin
             if(money > 10) next_money = money - 10;
             else next_money = 0;

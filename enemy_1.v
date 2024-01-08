@@ -54,6 +54,7 @@ module enemy1(
         .pos_0(5'd0),
         .pos_1(5'd0),
         .pos_2(pos_2),
+        .pos_3(5'd0),
         .hit(hit_2),
         .H(H),
         .V(V)
