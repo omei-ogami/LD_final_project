@@ -23,6 +23,7 @@ module lab(
     /////////////////////////////////////////////////////////////////
     wire clk_25MHz;
     wire clk_22;
+    wire db_rst, op_rst;
     /////////////////////////////////////////////////////////////////
     // VGA
     /////////////////////////////////////////////////////////////////
@@ -71,7 +72,7 @@ module lab(
     assign {vgaRed, vgaGreen, vgaBlue} = (valid==1'b1) ? pixel : 12'h0;
 
     // FSM
-    always @(posedge clk or posedge rst) begin
+    always @(posedge clk or posedge op_rst) begin
         if(rst) begin
             state <= GAMESTART;
         end
@@ -99,7 +100,7 @@ module lab(
 
     composite comp(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .state(state),
         .background(pixel_background),
         .enemy0(pixel_enemy0),
@@ -112,7 +113,7 @@ module lab(
 
     background vga_bg(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
         .h_cnt(h_cnt),
@@ -123,7 +124,7 @@ module lab(
 
     enemy0 vga_enemy0(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
         .hit_0(hit_0),
@@ -140,7 +141,7 @@ module lab(
 
     enemy1 vga_enemy1(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
         .hit_2(hit_2),
@@ -154,7 +155,7 @@ module lab(
 
     enemy2 vga_enemy2(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
         .hit_3(hit_3),
@@ -174,7 +175,7 @@ module lab(
 
     vga_controller vga_inst(
         .pclk(clk_25MHz),
-        .reset(rst),
+        .reset(op_rst),
         .hsync(hsync),
         .vsync(vsync),
         .valid(valid),
@@ -184,7 +185,7 @@ module lab(
 
     script pos_enemy(
         .clk(clk_22),
-        .rst(rst),
+        .rst(op_rst),
         .state(state),
         .pos_0(pos_0),
         .pos_1(pos_1),
@@ -203,13 +204,14 @@ module lab(
 		.clk(clk)
 	);
 
+    debounce db(.clk(clk), .pb(rst), .pb_debounced(db_rst));
     onepulse op1(.clk(clk), .signal(been_ready), .op(op_ready));
     onepulse op2(.clk(clk), .signal(key_down[last_change]), .op(op_keydown));
-    
+    onepulse op3(.clk(clk), .signal(db_rst), .op(op_rst));
 
     judge hit_judge(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .ready(op_ready),
         .keydown(op_keydown),
         .last_change(last_change),
@@ -235,7 +237,7 @@ module lab(
 
     player play(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .cheat(cheat),
         .damage_0(op_damage_0),
         .damage_1(op_damage_1),
@@ -254,7 +256,7 @@ module lab(
 
     gamestart start(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
         .ready(op_ready),
@@ -271,7 +273,7 @@ module lab(
 
     failure failed(
         .clk(clk),
-        .rst(rst),
+        .rst(op_rst),
         .clk_22(clk_22),
         .clk_25MHz(clk_25MHz),
         .ready(op_ready),
@@ -287,7 +289,7 @@ module lab(
     music music(
         .clk(clk),
         .clk_22(clk_22),
-        .reset(rst),
+        .reset(op_rst),
         .mode(state),
         .audio_mclk(audio_mclk),     
         .audio_lrck(audio_lrck),   
